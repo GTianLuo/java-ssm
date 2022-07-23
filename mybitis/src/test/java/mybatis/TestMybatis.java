@@ -21,6 +21,7 @@ public class TestMybatis {
         SqlSessionFactory factory = builder.build(is);
         //获取sql的会话对象，mybatis提供的数据库操作对象
         SqlSession sqlSession = factory.openSession();
+        //SqlSession sqlSession = factory.openSession(true);设置自动提交事务
         //获取UserMapper的代理实例化对象
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         //执行操作
