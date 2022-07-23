@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.UserMapper">
+
+    <!--
+    要保证两个一致
+        1. mapper的全类名要与映射文件的namespace一致。
+        2. mapper的方法名要与映射文件中sql的id一致。
+
+
+    -->
+    <insert id="insertUser">
+        insert into t_user values (null,'Joke','111111',21,'M','2985496686@qq.com');
+    </insert>
+</mapper>
