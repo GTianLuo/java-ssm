@@ -2,7 +2,7 @@ package pojo;
 
 public class User {
     private int id;
-    private String usrname;
+    private String username;
     private String password;
     private Integer age;
     private String gender;
@@ -10,7 +10,7 @@ public class User {
 
     public User(int id, String usrname, String password, Integer age, String gender, String email) {
         this.id = id;
-        this.usrname = usrname;
+        this.username = usrname;
         this.password = password;
         this.age = age;
         this.gender = gender;
@@ -25,7 +25,7 @@ public class User {
     }
 
     public String getUsrname() {
-        return usrname;
+        return username;
     }
 
     public String getPassword() {
@@ -49,7 +49,7 @@ public class User {
     }
 
     public void setUsrname(String usrname) {
-        this.usrname = usrname;
+        this.username = usrname;
     }
 
     public void setPassword(String password) {
@@ -66,5 +66,17 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", usrname='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", age=" + age +
+                ", gender='" + gender + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

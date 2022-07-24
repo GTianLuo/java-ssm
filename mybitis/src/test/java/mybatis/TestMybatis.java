@@ -6,9 +6,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
+import pojo.User;
+import utils.SqlSessionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class TestMybatis {
     @Test
@@ -22,6 +25,8 @@ public class TestMybatis {
         //获取sql的会话对象，mybatis提供的数据库操作对象
         SqlSession sqlSession = factory.openSession();
         //SqlSession sqlSession = factory.openSession(true);设置自动提交事务
+        //还有一种写法，可以直接通过SqlSession对象来执行sql语句，所以写法如下：
+        //sqlSession.insert("mapper.UserMapper.insertUser");需要提sql的唯一标识，即映射文件的namespace + id，这种方式就不再需要UserMapper接口了
         //获取UserMapper的代理实例化对象
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         //执行操作
@@ -31,5 +36,31 @@ public class TestMybatis {
         System.out.println(i);
         is.close();
         sqlSession.close();
+    }
+
+    @Test
+    public void testDelete(){
+        SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        userMapper.deleteUser();
+        sqlSession.close();
+    }
+
+    @Test
+    public  void testSelectById(){
+        SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.getUserById();
+        System.out.println(user);
+    }
+
+    @Test
+    public void testSelectAll(){
+        SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<User> userList = userMapper.getAll();
+        for(User user:userList){
+            System.out.println(user);
+        }
     }
 }
