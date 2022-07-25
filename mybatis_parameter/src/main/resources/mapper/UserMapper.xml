@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.UserMapper">
+    <!-- User selectByName(String username);-->
+    <select id="selectByName" resultType="pojo.User">
+        <!--select * from t_user where username = #{username};-->
+        select * from t_user where username = '${1}';
+    </select>
+
+    <!--User login(String username, String password);-->
+    <select id="login" resultType="pojo.User">
+        select*from t_user where  username = #{arg0} and password = #{arg1};
+    </select>
+    
+    <!--User loginByMap(Map<String,Object> map);-->
+    <select id="loginByMap" resultType="pojo.User">
+        select *from t_user where username = '${username}' and password = '${password}';
+    </select>
+
+    <!--void addUser(User user);-->
+    <select id="addUser" resultType="pojo.User">
+        insert into t_user values(null,#{username},#{password},#{age},#{gender},#{email});
+    </select>
+    
+    <!--User  loginByParam(@Param("username")String username,@Param("password") String password);-->
+    <select id="loginByParam" resultType="pojo.User">
+        select *from t_user where username=#{username} and password=#{password};
+    </select>
+</mapper>

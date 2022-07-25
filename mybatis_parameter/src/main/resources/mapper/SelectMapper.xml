@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.SelectMapper">
+    <!--int getCount();-->
+    <select id="getCount" resultType="Integer"><!-- mybatis为常用的Java类型起了别名 -->
+        select count(*) from t_user;
+    </select>
+    
+    <!-- List<Map<String,Object>> getNameAndEmail();-->
+    <select id="getNameAndEmail" resultType="map">
+        select username,password from t_user;
+    </select>
+
+
+
+    <!--Map<String,Object> getNameAndEmail1();-->
+    <select id="getNameAndEmail1" resultType="map">
+        select id,username,password from t_user;
+    </select>
+</mapper>
