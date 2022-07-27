@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.EmployeeMapper">
+    <!--List<Employee> getEmpDynamicSql(Employee emp);-->
+
+
+    <!--sql片段，可以记录一段公共sql片段，在sql语句中，需要使用的地方通过include标签进行引入-->
+    <sql id="empColumns">
+        emp_id,emp_name,age,gender
+    </sql>
+    <select id="getEmpDynamicSql" resultType="pojo.Employee">
+        select  <include refid="empColumns"/> from t_emp
+
+        <!--
+            if标签注意事项
+            1.test里面写条件判断，且用and表示，或用or表示
+            2.单独使用if标签时，要在原sql语句后面加上 where 1 = 1，这样在没有if语句成立时也不会报错
+            3.sql语句后面不要加‘ ; ’,不然会导致语句拼接时发生错误
+            4.标签内判断相等是 ==
+        -->
+        <!--
+            where标签
+            1.where常配合if标签使用。
+            2.当where标签中有条件成立会自动在原标签的后面加上where关键字，并且可以将最前面多余的and去掉。
+            3.无法去除后面多余的and
+        -->
+        <!--
+            trim标签有四个属性：prefix、suffix是在sql语句的最前面和最后面添加指定内容，prefixOverrides、suffixOverrides是在sql语句最前面和最后面删除指定内容，where就是一种trim标签
+        -->
+        <!--
+            choose、when、otherwise，when和otherwise是使用在choose标签里面的，when首次出现相当于if 第二次出现相当于else if ，otherwise用在最后面，相当于else
+        -->
+        <trim prefix="where"  prefixOverrides="and">
+            <if test="empName != null and empName != ''">
+                and empName = #{empName}
+            </if>
+            <if test="age != null and age != ''">
+                and age = #{age}
+            </if>
+            <choose>
+                <when test="2 == 1">
+                    and 2 = 2
+                </when>
+                <when test="1 == 2">
+                    and 3= 3
+                </when>
+                <otherwise>
+                    and 4 = 4
+                </otherwise>
+            </choose>
+        </trim>
+    </select>
+    <!--void addEmpList(List<Employee> emps);-->
+    <insert id="addEmpList">
+        insert into t_emp values
+        <!--
+            foreach标签用来遍历集合或者是数组，进行sql语句的拼接
+            collection:遍历的集合
+            item:为集合中每一天记录起的名字，方便获取信息
+            separator:两次拼接之间的分隔符
+        -->
+        <foreach collection="emps" item="emp" separator=",">
+            (null,#{emp.empName},#{emp.age},#{emp.gender},null)
+        </foreach>
+    </insert>
+    
+    
+    <!--void delEmpByIdArray(@Param("empIds") Integer empIds[]);-->
+    <delete id="delEmpByIdArray">
+        delete from t_emp where emp_id in(
+          <foreach collection="empIds" item="empId" separator=",">
+              #{empId}
+          </foreach>
+        )
+    </delete>
+</mapper>
