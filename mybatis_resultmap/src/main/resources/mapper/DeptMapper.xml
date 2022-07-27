@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.DeptMapper">
+    <!--Dept getDeptById(@Param("deptId") int deptId);-->
+    <select id="getDeptById" resultType="pojo.Dept">
+        select *from t_dept where dept_id = #{deptId};
+    </select>
+
+    <resultMap id="deptAndEmpResultMap" type="pojo.Dept">
+        <id column="dept_id" property="deptId"/>
+        <result column="dept_name" property="deptName"/>
+        <!--collection:用于处理一对多的查询-->
+        <collection property="employees" ofType="pojo.Employee">
+            <id column="emp_id" property="empId"/>
+            <result column="emp_name" property="empName"/>
+            <result column="age" property="age"/>
+            <result column="gender" property="gender"/>
+        </collection>
+    </resultMap>
+
+    <!-- List<Dept> getAllDeptAndEmp(); -->
+    <select id="getAllDeptAndEmp" resultMap="deptAndEmpResultMap">
+        SELECT *FROM t_dept LEFT JOIN  t_emp ON t_dept.dept_id = t_emp.dept_id ;
+    </select>
+
+
+    <resultMap id="deptAndEmpByStepResultMap" type="pojo.Dept">
+        <id column="dept_id" property="deptId"/>
+        <result column="dept_name" property="deptName"/>
+        <collection property="employees" ofType="Employee" select="mapper.EmpMapper.getEmpByDept" column="dept_id"/>
+    </resultMap>
+    <!-- List<Dept> getAllDeptAndEmpByStep();-->
+    <select id="getAllDeptAndEmpByStep" resultMap="deptAndEmpByStepResultMap">
+        SELECT *FROM t_dept ;
+    </select>
+</mapper>

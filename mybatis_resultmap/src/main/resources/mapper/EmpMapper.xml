@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapper.EmpMapper">
+
+
+
+    <!--
+        resultMap的属性：
+        id:该映射的唯一标识
+        type：处理映射关系的实体类的类型。
+
+        内部标签：
+        id：处理主键和实体类属性的映射关系
+        result：处理普通字段和实体类属性的映射关系
+                column:字段名   property:映射的属性名
+    -->
+    <resultMap id="empResultMap" type="pojo.Employee">
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+    </resultMap>
+    
+    <resultMap id="empAndDeptResultMapOne" type="pojo.Employee">
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <result column="dept_id" property="dept.deptId"/>
+        <result column="dept_name" property="dept.deptName"/>
+    </resultMap>
+
+
+
+    <resultMap id="empAndDeptResultMapTwo" type="pojo.Employee">
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <!--
+            association:处理多对一的映射关系(处理实体类型的属性)
+                property:要处理的实体类型的属性
+                javaType:该属性的实体类型
+        -->
+        <association property="dept" javaType="pojo.Dept">
+            <id column="dept_id" property="deptId"/>
+            <result column="dept_name" property="deptName"/>
+        </association>
+    </resultMap>
+
+
+    <!--List<Employee> getAllEmp();-->
+    <select id="getAllEmp" resultMap="empResultMap">
+        <!--select emp_id empId , emp_name empName , age, gender from t_emp;-->
+        select *from t_emp;
+    </select>
+
+    <!--List<Employee> getAllEmpAndDeptOne();-->
+    <select id="getAllEmpAndDeptOne" resultMap="empAndDeptResultMapOne">
+        SELECT t_emp.*,t_dept.dept_name FROM t_emp LEFT JOIN t_dept ON t_dept.dept_id = t_emp.dept_id;
+    </select>
+
+
+    <!--List<Employee> getAllEmpAndDeptTwo();-->
+    <select id="getAllEmpAndDeptTwo" resultMap="empAndDeptResultMapTwo">
+        SELECT t_emp.*,t_dept.dept_name FROM t_emp LEFT JOIN t_dept ON t_dept.dept_id = t_emp.dept_id;
+    </select>
+    
+    
+    
+    <resultMap id="empAndDeptResultMapByStep" type="pojo.Employee" >
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+
+        <!--
+            使用分步查询对某一属性进行映射
+            property:需要进行映射处理的实体类属性
+            select：分布查询的唯一标识
+            column:分布查询所需要的参数(由第一次查询提供)
+        -->
+        <association property="dept"
+                     select="mapper.DeptMapper.getDeptById"
+                     column="dept_id"/>
+    </resultMap>
+
+    <!--List<Employee> getAllEmpAndDeptByStep();-->
+    <select id="getAllEmpAndDeptByStep" resultMap="empAndDeptResultMapByStep">
+        select *from t_emp;
+    </select>
+
+
+    <!--List<Employee> getEmpByDept();-->
+    <select id="getEmpByDept" resultType="pojo.Employee">
+        select *from t_emp where dept_id = #{dept_id};
+    </select>
+</mapper>

@@ -9,9 +9,6 @@
         标签要按照以下顺序：
         (properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?,reflectorFactory?,plugins?,environments?,databaseIdProvider?,mappers?)
      -->
-    <!--
-        typeAliases是用来给某一个全类名起别名的，起的别名会在整个mybatis的范围内生效
-    -->
 
     <!--引入jdbc的properties的配置文件，访问properties中的数据以${key}的形式访问-->
     <properties resource="jdbc.properties"/>
@@ -19,7 +16,9 @@
 
 
 
-
+    <!--
+        typeAliases是用来给某一个全类名起别名的，起的别名会在整个mybatis的范围内生效
+    -->
     <typeAliases>
         <!--
             type:被起别名的全类名
@@ -90,7 +89,7 @@
         <!--
             以包名的方式引入配置文件，必须满足以下两种条件
              1.mapper接口的包和映射配置文件的包所在的包必须一致
-             2.mapper接口的包和映射配置文件的包的名字必须一致
+             2.mapper接口的包和映射配置文件的名字必须一致
 
             注：mapper接口的包和配置文件的包虽然不在同一目录下，但是在加载之后的文件是在同一个目录之下的。
         -->

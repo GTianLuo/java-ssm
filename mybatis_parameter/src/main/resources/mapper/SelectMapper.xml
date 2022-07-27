@@ -20,4 +20,21 @@
     <select id="getNameAndEmail1" resultType="map">
         select id,username,password from t_user;
     </select>
+
+
+
+    <!--List<User> getNameVague(char x);-->
+    <select id="getNameVague" resultType="pojo.User">
+        <!--select *from t_user where name like '%#{x}%';-->
+        <!--select * from t_user where username like '%${x}%'-->
+        <!--select * from t_user where username like concat('%',#{x},'%') -->
+        select *from t_user where username like "%"#{x}"%";
+    </select>
+
+
+    <!--void deleteMoreUser(String ids);-->
+    <select id="deleteMoreUser">
+        delete from t_user where id in (${ids})
+    </select>
+
 </mapper>

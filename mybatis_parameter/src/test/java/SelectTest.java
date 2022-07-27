@@ -1,6 +1,7 @@
 import mapper.SelectMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
+import pojo.User;
 import utils.SqlSessionUtils;
 
 import java.util.HashMap;
@@ -37,5 +38,13 @@ public class SelectTest {
         for(Map.Entry entry :nameAndEmail.entrySet()){
             System.out.println(entry.getKey() + ":  "+ entry.getValue());
         }
+    }
+
+    @Test
+    public void testGetUserVague(){
+        SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+        SelectMapper selectMapper = sqlSession.getMapper(SelectMapper.class);
+        List<User> list = selectMapper.getNameVague('J');
+        list.forEach((user)-> System.out.println(user));
     }
 }
