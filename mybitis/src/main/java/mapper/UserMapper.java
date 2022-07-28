@@ -1,5 +1,6 @@
 package mapper;
 
+import org.apache.ibatis.annotations.Select;
 import pojo.User;
 
 import java.util.List;
@@ -25,4 +26,11 @@ public interface UserMapper {
      * 查询所有用户信息
      */
     List<User> getAll();
+
+
+    /**
+     *
+     */
+    @Select("select *from t_user where age = #{ahe}")
+    List<User> getAllByAge(int age);
 }

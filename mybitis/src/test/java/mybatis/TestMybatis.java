@@ -2,6 +2,7 @@ package mybatis;
 
 import mapper.UserMapper;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -20,7 +21,7 @@ public class TestMybatis {
         InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
         //创建 SqlSessionFactoryBuilder对象
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
-        //获取SqlSessionFactory
+        //获取SqlSessionFactory，获取之后自动将流关闭
         SqlSessionFactory factory = builder.build(is);
         //获取sql的会话对象，mybatis提供的数据库操作对象
         SqlSession sqlSession = factory.openSession();
@@ -58,9 +59,18 @@ public class TestMybatis {
     public void testSelectAll(){
         SqlSession sqlSession = SqlSessionUtils.getSqlSession();
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        RowBounds rowBounds = new RowBounds();
         List<User> userList = userMapper.getAll();
         for(User user:userList){
             System.out.println(user);
         }
+    }
+
+
+    public void testSeletByAge(){
+        SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<User> list  = userMapper.getAllByAge(21);
+        System.out.println(list);
     }
 }

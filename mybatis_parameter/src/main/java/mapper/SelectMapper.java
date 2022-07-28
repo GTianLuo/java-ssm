@@ -21,7 +21,7 @@ import java.util.Map;
         select *from t_user where name like '%#{x}%';会被编译成select *from t_user where name like '%?%';这里的？在引号里面，不能当作占位符处理
         select * from t_user where username like '%${x}%';会被编译成select * from t_user where username like '%J%'
         如果想要使用#{}我们可以使用mysql的字符串拼接函数,select * from t_user where username like concat('%',#{x},'%')
-        我们也可以直接拼接：select *from t_user where username like "%"#{x}"%"
+        我们也可以直接拼接：select *from t_user where username like "%"#{x}"%" 这里必须使用双引号
 
  */
 public interface SelectMapper {
