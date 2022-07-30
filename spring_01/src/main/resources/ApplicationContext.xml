@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--<context:property-placeholder location="classpath:jdbc.properties"/>-->
+    <!--
+        bean:配置一个bean对象来交给IOC容器来管理
+        id：唯一标识
+        class：bean对象的全类名
+    -->
+
+
+
+    <bean id="HelloWord" class="com.pojo.HelloWorld"/>
+
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--依赖注入之Setter注入-->
+    <bean id="student2" class="com.pojo.Student">
+        <property name="id" value="1"/>
+        <property name="name" value="张三"/>
+        <property name="age" value="13"/>
+        <property name="gender" value="男"/>
+    </bean>
+
+
+    <!--依赖注入之Constructor注入-->
+    <bean id="student3" class="com.pojo.Student">
+        <constructor-arg value="2"/>
+        <constructor-arg>
+            <null/>
+        </constructor-arg>
+        <constructor-arg value="13"/>
+        <constructor-arg value="男" name="gender"/>
+    </bean>
+
+    <!--特殊值注入-->
+    <bean id="student4" class="com.pojo.Student">
+        <!--将某一个属性赋值为null-->
+        <property name="name">
+            <null/>
+        </property>
+        <!--为某一个属性赋带有<>的值-->
+        <property name="gender">
+            <value><![CDATA[<不明>]]></value>
+        </property>
+    </bean>
+
+    <!--通过外部bean的方式给类类型的属性赋值-->
+    <bean id="student5" class="com.pojo.Student">
+        <property name="name" value="李四"/>
+        <property name="id" value="1"/>
+        <property name="gender" value="男"/>
+        <property name="age" value="21"/>
+        <!--ref属性：通过id引用IOC中的bean-->
+        <property name="clazz" ref="clazz1"/>
+    </bean>
+    <bean id="clazz1" class="com.pojo.Clazz" scope="prototype">
+        <property name="classID" value="1"/>
+        <property name="className" value="2106班"/>
+    </bean>
+
+
+    <!--通过级联的方式为类类型的属性赋值-->
+    <bean id="student6" class="com.pojo.Student">
+        <property name="name" value="王五"/>
+        <property name="id" value="2"/>
+        <property name="gender" value="男"/>
+        <property name="age" value="21"/>
+        <property name="clazz" ref="clazz1"/>
+        <property name="clazz.classID" value="2"/>
+        <property name="clazz.className" value="2105"/>
+    </bean>
+
+    <!--通过内部bean的方式为类类型属性赋值-->
+    <bean id="student7" class="com.pojo.Student">
+        <property name="name" value="张三"/>
+        <property name="id" value="3"/>
+        <property name="gender" value="男"/>
+        <property name="age" value="26"/>
+        <property name="clazz">
+            <bean class="com.pojo.Clazz">
+                <property name="classID" value="3"/>
+                <property name="className" value="2104"/>
+            </bean>
+        </property>
+    </bean>
+
+
+    <!--为数组类型的属性赋值-->
+    <!--<bean id="student8" class="com.pojo.Student">
+        <property name="hobbies">
+            <array>
+                <value>打乒乓</value>
+                <value>听歌</value>
+            </array>
+        </property>
+    </bean>-->
+
+
+    <!--为集合类型的属性赋值    内部赋值-->
+    <bean id="student9" class="com.pojo.Student">
+        <property name="hobbies">
+            <map>
+                <entry key="爱好一" value="乒乓球"/>
+                <entry key="爱好二" value="听歌"/>
+            </map>
+        </property>
+    </bean>
+
+
+    <!--为集合类型的属性赋值  引用外部bean-->
+
+    <bean id="student10" class="com.pojo.Student">
+        <property name="hobbies" ref="map"/>
+    </bean>
+    <util:map id="map2"/>
+    <util:map id="map">
+        <entry key="爱好一" value="乒乓球"/>
+        <entry key="爱好二" value="听歌"/>
+    </util:map>
+    <util:list id="list">
+        <value>打乒乓</value>
+        <value>听歌</value>
+    </util:list>
+
+    <!--P命名空间-->
+    <bean id="student11" class="com.pojo.Student" p:id="3" p:name="张三" p:clazz-ref="clazz1" />
+
+    <!--通过外部资源配置bean-->
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+</beans>

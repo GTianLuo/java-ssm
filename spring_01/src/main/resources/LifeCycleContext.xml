@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!--设置为多例-->
+    <bean id="user1" class="com.pojo.User" scope="prototype"/>
+
+    <!--设置为单例，和默认一样-->
+    <bean id="user2" class="com.pojo.User" scope="singleton"/>
+
+    <!--指定初始化和销毁的方法-->
+    <bean id="user3" class="com.pojo.User" init-method="initMethod" destroy-method="destroyMethod"/>
+
+
+    <bean id="myProcessor" class="com.pojo.MyProcessor"/>
+</beans>
