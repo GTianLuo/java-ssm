@@ -3,9 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="userController" class="com.pojo.UserController" autowire="byType"/>
+    <bean id="userController" class="com.pojo.com.guo.pojo.UserController" autowire="byType"/>
 
-    <bean id="userService" class="com.pojo.UserService" autowire="byType"/>
+    <bean id="userService" class="com.pojo.com.guo.pojo.UserService" autowire="byType"/>
 
-    <bean  id="userDAO" class="com.pojo.UserDAO"/>
+    <bean  id="userDAO" class="com.pojo.com.guo.pojo.UserDAO"/>
 </beans>
