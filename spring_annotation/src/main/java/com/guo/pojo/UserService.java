@@ -4,7 +4,7 @@ package com.guo.pojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("qqq")
 public class UserService {
 
     @Autowired

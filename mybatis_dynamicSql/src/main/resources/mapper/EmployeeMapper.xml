@@ -4,13 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="mapper.EmployeeMapper">
-    <!--List<Employee> getEmpDynamicSql(Employee emp);-->
 
 
     <!--sql片段，可以记录一段公共sql片段，在sql语句中，需要使用的地方通过include标签进行引入-->
     <sql id="empColumns">
         emp_id,emp_name,age,gender
     </sql>
+    <!--List<Employee> getEmpDynamicSql(Employee emp);-->
     <select id="getEmpDynamicSql" resultType="pojo.Employee">
         select  <include refid="empColumns"/> from t_emp
 
@@ -41,10 +41,10 @@
                 and age = #{age}
             </if>
             <choose>
-                <when test="2 == 1">
+                <when test="1 == 2">
                     and 2 = 2
                 </when>
-                <when test="1 == 2">
+                <when test="1 == 1">
                     and 3= 3
                 </when>
                 <otherwise>
@@ -59,7 +59,7 @@
         <!--
             foreach标签用来遍历集合或者是数组，进行sql语句的拼接
             collection:遍历的集合
-            item:为集合中每一天记录起的名字，方便获取信息
+            item:为集合中每一项记录起的名字，方便获取信息
             separator:两次拼接之间的分隔符
         -->
         <foreach collection="emps" item="emp" separator=",">

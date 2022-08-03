@@ -22,7 +22,8 @@
         <id column="emp_id" property="empId"/>
         <result column="emp_name" property="empName"/>
     </resultMap>
-    
+
+    <!--级联-->
     <resultMap id="empAndDeptResultMapOne" type="pojo.Employee">
         <id column="emp_id" property="empId"/>
         <result column="emp_name" property="empName"/>
@@ -84,7 +85,7 @@
         -->
         <association property="dept"
                      select="mapper.DeptMapper.getDeptById"
-                     column="dept_id"/>
+                     column="dept_id" />
     </resultMap>
 
     <!--List<Employee> getAllEmpAndDeptByStep();-->

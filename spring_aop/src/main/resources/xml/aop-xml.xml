@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <context:component-scan base-package="xml"/>
+
+
+    <aop:config >
+
+        <!--设置公共的切入点表达式3-->
+        <aop:pointcut id="calculator" expression="execution(* xml.CalculatorImp.*(..))"/>
+        <aop:aspect ref="logAspect">
+            <!--前置通知-->
+            <aop:before method="beforeAdvice" pointcut-ref="calculator"/>
+
+            <!--返回通知-->
+            <aop:after-returning method="afterReturnAdvice" pointcut-ref="calculator" returning="result"/>
+
+            <!--后置通知-->
+            <aop:after method="afterAdvice" pointcut-ref="calculator" />
+
+            <!--异常通知-->
+            <aop:after-throwing method="ThrowingAdvice" pointcut-ref="calculator" throwing="ex"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
