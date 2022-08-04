@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>测试乱码</title>
+</head>
+<body>
+<form th:action="@{/testfive}" method="post">
+    输入中文：<input type="text" name="test"/>
+    <input type="submit" value="提交"/>
+</form>
+</body>
+</html>
