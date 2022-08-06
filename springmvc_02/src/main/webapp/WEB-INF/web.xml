@@ -3,22 +3,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-
-    <!--配置SpringMVC的前端控制器DispatcherServlet-->
-    <!--SpringMVC的配置文件的文件名必须是以这个name + -servlet 命名, 以下配置对应的SpringMVC文件名为SpringMVC-servlet-->
-    <!--默认配置文件的位置：在WEB-INF下-->
+    <!--配置DispatcherServlet-->
     <servlet>
         <servlet-name>SpringMVC</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <!--我们可以指定配置文件的所在位置-->
+        <!--为配置文件更换路径-->
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>classpath:SpringMVC-servlet.xml</param-value>
         </init-param>
-        <!--因为DispatcherServlet在初始化时会进行较多的操作，会耗费一定时间，所以这里可以将初始化时机提前(在服务器启动时进行初始化)-->
-        <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
+    <servlet-mapping>
+        <servlet-name>SpringMVC</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
 
     <!--设置字符编码过滤器，SpringMVC已经实现好了-->
     <filter>
@@ -40,11 +40,14 @@
     </filter-mapping>
     
     
-    <servlet-mapping>
-        <servlet-name>SpringMVC</servlet-name>
-        <!-- / 表示可以匹配浏览器向服务器发送的所有请求(不包括.jsp)-->
-        <!-- /* 表示可以匹配浏览器向服务器发送的所有请求(包括.jsp)-->
-        <!--DispatcherServlet是处理不了.jsp的请求的，.jsp请求由Tomcat已经配置好的JSPServlet来进行处理-->
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+    <!--设置处理请求方式的过滤器-->
+    <filter>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
 </web-app>

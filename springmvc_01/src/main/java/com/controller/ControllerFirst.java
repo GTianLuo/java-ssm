@@ -1,8 +1,16 @@
 package com.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import pojo.User;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * @ RequestMapping标识一个类：设置映射请求的请求路径的初始信息
@@ -50,7 +58,7 @@ import pojo.User;
  * rest风格：/index/1
  * 我们可以通过注解可以获取这个1
  * 第一步：RequestMapping的value属性设置的路径的后面加 {name}
- * 第二步：设置方法的参数，通过注解来获取这个值：@PathValue Integer name
+ * 第二步：设置方法的参数，通过注解来获取这个值：@PathVariable Integer name
  *
  *
  * 获取请求参数的方式
@@ -69,6 +77,19 @@ import pojo.User;
  * @ RequestHeader和@CookieValue分别是用来获取请求头信息，和cookie信息的，用法和RequestParam一样，只是想获取请求头信息和cookie信息注解不能省略
  *
  *
+ * 设置post请求乱码问题
+ *我们无法通过获取RequestServlet来设置编码，因为设置编码必须放在获取参数之前，不然设置无效，请求参数的获取是由DispatcherServlet提前获取的。
+ * 我们只需要将SpringMVC提供的CharacterEncodingFilter配置到web.xml文件中就行了
+ * 注意：该过滤器一般放在最前面，防止其它过滤器在执行过程中有获取参数的操作
+ *
+ *
+ *  向域对象中共享数据
+ * 1.向请求域共享数据：
+ *  通过ModelAndView向请求域添加数据，并且进行页面转发
+ *  普通返回字符串的控制方法底层就会拿这个返回的字符串封装成一个ModalAndView
+ *  所以我们这里可以直接返回一个ModalAndView
+ *  我们还可以使用Model、ModelMap、Map来向请求域共享数据，下面有例子。
+ * 2.向session和application域共享数据一般采用获取Request的方式，然后使用JavaWeb中的方式共享
  *
  */
 
@@ -129,5 +150,52 @@ public class ControllerFirst {
         System.out.println(test);
         return "success";
     }
+
+    @RequestMapping("/testmav")
+    public ModelAndView testMav(){
+        ModelAndView mav = new ModelAndView();
+        //向请求域添加数据
+        mav.addObject("operation","test ModelAndView");
+        //页面转发
+        mav.setViewName("success");
+        return mav;
+    }
+
+    @RequestMapping("/testmodel")
+    public String testModel(Model model){
+        model.addAttribute("operation","test model");
+        return "success";
+    }
+
+    @RequestMapping("/testmodelmap")
+    public String testModelMap(ModelMap modelMap){
+        modelMap.addAttribute("operation","test ModelMap");
+        return "success";
+    }
+
+
+    @RequestMapping("/testmap")
+    public String testMap(Map<String,Object> map){
+        map.put("operation","test Map");
+        return "success";
+    }
+
+    @RequestMapping("/testsession")
+    public String testSession(HttpSession session){
+        session.setAttribute("operation","test session");
+        return "success";
+    }
+
+    @RequestMapping("/testapplication")
+    public String testApplication(HttpServletRequest request){
+        ServletContext servletContext = request.getServletContext();
+        servletContext.setAttribute("operation","test application");
+        return "success";
+    }
+
+
+
+
+
 
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<h1>index.html</h1>
+<a th:href="@{/user}">查找全部用户信息</a><br/>
+<a th:href="@{/user/2}">根据id查找用户信息</a><br/>
+<form th:action="@{/user}" method="post">
+    <input type="submit" value="提交用户信息"/>
+</form>
+
+<!--
+    表单的发送方式只能为get或post
+    若想要发送put、delete请求要满足以下条件：
+    1.在web.xml中配置了HiddenHttpMethodFilter
+    2.表单的发送方式必须为post，并且传输请求参数_method，_method的value值就是发送方式
+-->
+<form th:action="@{/user/3}" method="post">
+    <input type="hidden" name="_method" value="put">
+    <input type="submit" value="更改用户信息">
+</form>
+<form th:action="@{/user/4}" method="post">
+    <input type="hidden" name="_method" value="delete">
+    <input type="submit" value="删除用户信息">
+</form>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.pojo;
 
 public class UserService {
     UserDAO userDAO;
+
     Integer id;
 
     public UserDAO getUserDAO() {

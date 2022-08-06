@@ -11,7 +11,16 @@
 <a th:href="@{/success/1}"><br/>测试thymeleaf渲染之后的路径</a><br/><!-- 右边这样写就会被thymeleaf渲染，缺什么补什么，渲染之后路径为：http://localhost:3080/工程路径/hello -->
 <a th:href="@{/testone}">测试获取请求头信息</a><br/>
 <a th:href="@{/testtwo}">测试获取cookie信息</a><br/>
-<a th:href="@{/testpojo(userName='张四',age='12')}">测试拿一个实体类来接收参数</a>
-<a th:href="@{/testfour}">测试post请求乱码问题</a>
+<a th:href="@{/testpojo(userName='张四',age='12')}">测试拿一个实体类来接收参数</a><br/>
+<a th:href="@{/testfour}">测试post请求乱码问题</a><br/>
+<a th:href="@{/testmav}">测试通过ModelAndView向请求域共享数据</a><br/>
+<a th:href="@{/testmodel}">测试通过Model向请求域共享数据</a><br/>
+<a th:href="@{/testmodelmap}">测试通过modelmap向请求域共享数据</a><br/>
+<a th:href="@{/testmap}">测试通过map向请求域共享数据</a><br/>
+<a th:href="@{/testsession}">测试将数据共享至session域</a><br/>
+<a th:href="@{/testapplication}">测试将数据共享至Application域</a><br/>
+<hr>
+<a th:href="@{/test/internalresourceview}">测试InternalResourceView转发视图</a><br/>
+<a th:href="@{/test/redirectview}">测试重定向转发视图</a><br/>
 </body>
 </html>

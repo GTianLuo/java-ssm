@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<a th:href="@{/employee}">查询全部员工信息</a><br/>
+<div id="app">
+    <input type="button" value="测试ajax请求通过@RequestBody获取请求中json数据"  @click = "testRequestBody">
+    <input type="button" value="测试ajax请求通过@ResponseBody响应json数据"  @click = "testResponseBody">
+</div>
+<div id ="app2">
+</div>
+<script type="text/javascript" th:src="@{/js/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+<script type="text/javascript">
+    var vue = new Vue({
+        el:"#app",
+        methods:{
+            testRequestBody(){
+                axios.post(
+                    "/SpringMVC/ajax/axios",
+                    {username:"张三",password:"1234"},
+                ).then(response=>{
+                    console.log(response.data)
+                    document.getElementById("app2").innerText = response.data
+                })
+            },
+            testResponseBody(){
+                axios.post(
+                    "/SpringMVC/ajax/responsebody"
+                ).then(response=>{
+                    document.getElementById("app2").innerText = response.data
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

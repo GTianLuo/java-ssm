@@ -5,6 +5,13 @@
     <title>Successful</title>
 </head>
 <body>
-<p1>成功！！！</p1>
+<p1>成功！！！</p1><br/>
+
+<!--获取请求域的内容-->
+<p th:text="${operation}"></p>
+<!--获取Session域的内容-->
+<p th:text="${session.operation}"></p>
+<!--获取应用域的内容-->
+<p th:text="${application.operation}"></p>
 </body>
 </html>
