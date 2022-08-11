@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1 class="atx" id="一、获取bean对象的三种方式">一、获取Bean对象的三种方式</h1>
+<p>首先我们创建一个类来演示Bean对象的获取</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-28-19-29-39-image.png?msec=1660152813189"></p>
+<p>我们在配置文件中配置Bean</p>
+<pre><code class="fenced-code-block language-xml">&lt;bean id="student" class="com.pojo.Student"/&gt;</code></pre>
+<h2 class="atx" id="1getbeanstring-id">1.getBean(String id)</h2>
+<p>这种方式直接通过唯一标识获取的Bean对象，获取的对象为Object类型，通常需要向下转型。</p>
+<pre><code class="fenced-code-block language-java">@Test
+    public void testNewStudent(){
+        //获取IOC容器
+        ApplicationContext ioc =new ClassPathXmlApplicationContext("applicationContext.xml");
+        //根据Bean的Id获取IOC容器帮助创建的Bean对象
+        Student student = (Student) ioc.getBean("student");
+    }</code></pre>
+<h2 class="atx" id="2getbeanclasslesstgreater-class">2.getBean(Class class)</h2>
+<p>直接通过类型来获取Bean对象。</p>
+<pre><code class="fenced-code-block language-java">@Test
+    public void testNewStudent(){
+        //获取IOC容器
+        ApplicationContext ioc =new ClassPathXmlApplicationContext("applicationContext.xml");
+        //通过Class获取bean对象
+        Student student = ioc.getBean(Student.class);
+    }</code></pre>
+<p>需要注意的是，通过这种方式，必须满足在配置文件有并且只有一个Bean与这个类匹配。</p>
+<p>当配置文件有多个bean都与该类匹配时，会报如下错误：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-28-19-39-20-image.png?msec=1660152812964"></p>
+<p>当配置文件中没有bean与该类匹配时，会报如下错误：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-28-19-41-05-image.png?msec=1660152812913"></p>
+<p>还有一种特殊情况，我们在<strong>bean</strong>唯一的情况下，可以通过它的父类接口直接创建对象，这里的唯一是指：<strong>该接口的实现类中只有这一个类配置了bean，并且只配置了一个</strong>。</p>
+<p>我们创建Person接口，并且让Student类实现该接口，我们就可以直接通过以下方式获取bean对象:</p>
+<pre><code class="fenced-code-block language-java">@Test
+    public void testNewStudent(){
+        //获取IOC容器
+        ApplicationContext ioc =new ClassPathXmlApplicationContext("applicationContext.xml");
+        //通过接口获取Bean对象
+        Person person = ioc.getBean(Person.class);
+    }</code></pre>
+<h2 class="atx" id="3getbeanstring-id-classlesstgreater-class">3.getBean(String id, Class class)</h2>
+<p>这种同时根据bean的id和类型来获取Bean对象我们既不需要考虑向下转型，也不需要保证bean的唯一性。</p>
+<pre><code class="fenced-code-block language-java">public void testNewStudent(){
+        //获取IOC容器
+        ApplicationContext ioc =new ClassPathXmlApplicationContext("applicationContext.xml");
+        //同时根据id和类型获取bean对象
+        Student student = ioc.getBean("student", Student.class);
+    }</code></pre>
+<h2 class="atx" id="注意点">注意点</h2>
+<ol>
+    <li>配置bean时只配置id和class的话，获取对象时，底层都是默认通过反射调用无参构造来获取的，我们要保证类中无参构造的存在.</li>
+</ol>
+<h1 class="atx" id="二、di：依赖注入">二、DI：依赖注入</h1>
+<p><strong>IOC:Inverse of Control，是控制反转的意思。传统程序我们是通过new的方式主动创建对象，但是在Spring中，我们将外部资源的控制权交给了ioc容器，由容器主动创建对象，然后通过检查将对象依赖的对象主动注入。ioc容器是对象的创建者，而对象成为了依赖对象的被动接受者。</strong></p>
+<p><strong>DI：dependency&nbsp;injection，是依赖注入的意思。ioc负责将对象创建好，通过依赖检查,然后将创建的对象主动交给需要该对象的程序。</strong></p>
+<p><strong>IOC和DI的区别：DI可以看做IOC的一种实现方式，通过依赖注入的方式实现了控制翻转。我们也可以将二者看为同一个东西，只是强调的角度不同。IOC强调的是由原先对象控制依赖对象的创建变成了ioc容器控制依赖对象的创建；DI强调的是IOC容器主动将依赖对象交给需要他的对象这一动作</strong></p>
+<h2 class="atx" id="1setter注入">1.Setter注入</h2>
+<p>在配置bean时，通过以下方式，容器在创建对象后就会通过调用Setter方法来设置对象的属性。</p>
+<pre><code class="fenced-code-block language-xml">&lt;bean id="student" class="com.pojo.Student"&gt;
+        &lt;property name="id" value="1"/&gt;
+        &lt;property name="name" value="张三"/&gt;
+        &lt;property name="age" value="12"/&gt;
+        &lt;property name="gender" value="男"/&gt;
+&lt;/bean&gt;</code></pre>
+<p><strong>注意点：</strong></p>
+<ol>
+    <li>我们想要将某个属性设置为null时，不能直接赋值给value属性，因为当对象属性是String类型时，该属性将会被赋值为字符串<code>“null”</code>，而不是空；当对象属性是其它类型时，编译器会直接报错。Setter注入我们想要将某个对象属性设为null时，我们可以直接不设置该属性，也可以使用以下方式：</li>
+</ol>
+<pre><code class="fenced-code-block language-xml">&lt;bean id="student" class="com.pojo.Student"&gt;
+     &lt;!--将某一个属性赋值为null--&gt;
+     &lt;property name="name"&gt;
+        &lt;null/&gt;
+     &lt;/property&gt;
+&lt;/bean&gt;</code></pre>
+<ol start="2">
+    <li>像<code>&lt;</code>或者<code>&gt;</code>这种符号是不能直接出现在value属性中的，我们需要借助<code>xml实体</code>或者是<code>CDATA节</code>。</li>
+</ol>
+<p><strong>xml实体：用<code>&amp;lt;</code>代表大于号，用<code>&amp;gt;</code>代替小于号。</strong></p>
+<p><strong>CDATA节：在CDATA中的数据将以原样输出，如下：</strong></p>
+<pre><code class="fenced-code-block language-xml">&lt;property name="gender"&gt;
+      &lt;value&gt;&lt;![CDATA[&lt;不明&gt;]]&gt;&lt;/value&gt;
+&lt;/property&gt;</code></pre>
+<p>IDEA中，在value标签内输入大写的CD，就会弹出提示。</p>
+<h2 class="atx" id="2constructor注入">2.Constructor注入</h2>
+<p>在配置bean时通过如下方式，容器在创建对象时会调用其相应的构造方法。</p>
+<pre><code class="fenced-code-block language-xml">!--依赖注入之Constructor注入--&gt;
+    &lt;bean id="student" class="com.pojo.Student"&gt;
+        &lt;constructor-arg value="2"/&gt;
+        &lt;constructor-arg value="李四"/&gt;
+        &lt;constructor-arg value="13"/&gt;
+        &lt;constructor-arg value="男"/&gt;
+    &lt;/bean&gt;</code></pre>
+<p><strong>注意点:</strong></p>
+<ol>
+    <li><p>配置参数个数要与某一个构造方法的参数个数相同。</p>
+    </li>
+    <li><p>若实体类中有两个参数个数相同的构造方法，我们在配置时可以通过指定所配置参数对应哪一个属性，从而达到区分两个构造方法的效果。</p>
+    </li>
+</ol>
+<p>例子：若两个构造方法参数个数相同，并且前三个参数都是一样的，最后一个参数一个是gender，一个是score，我们想要指定为当一个构造方法，我们可以进行如下配置：</p>
+<pre><code class="fenced-code-block language-xml">&lt;bean id="student3" class="com.pojo.Student"&gt;
+    &lt;constructor-arg value="2"/&gt;
+    &lt;constructor-arg value="李四"/&gt;
+    &lt;constructor-arg value="13"/&gt;
+    &lt;constructor-arg value="男" name="gender"/&gt;
+ &lt;/bean&gt;</code></pre>
+<ol start="3">
+    <li>想要将某一个属性置为null，跟Setter注入第二种方式相同，如下：</li>
+</ol>
+<pre><code class="fenced-code-block language-xml">&lt;constructor-arg&gt;
+     &lt;null/&gt;
+&lt;/constructor-arg&gt;</code></pre>
+<h2 class="atx" id="3为类类型的属性赋值">3.为类类型的属性赋值</h2>
+<p>上面我们使用value为属性赋值，但是value只能为八大基本数据类型以及包装类型，还有字符串类型赋值，它并不能为类类型的属性赋值，下面我们讲解如何为类类型的属性赋值。</p>
+<p>我们在创建一个Clazz类，代表学生的班级，如下：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-29-13-38-28-image.png?msec=1660152812970"></p>
+<p>我们再往学生类中增加新的属性，如下：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-29-13-39-57-image.png?msec=1660152813091"></p>
+<h3 class="atx" id="方式一：引用外部bean">方式一：引用外部bean</h3>
+<pre><code class="fenced-code-block language-xml">&lt;!--通过外部bean的方式给类类型的属性赋值--&gt;
+    &lt;bean id="student" class="com.pojo.Student"&gt;
+        &lt;property name="name" value="李四"/&gt;
+        &lt;property name="id" value="1"/&gt;
+        &lt;property name="gender" value="男"/&gt;
+        &lt;property name="age" value="21"/&gt;
+        &lt;!--ref属性：通过id引用IOC中的bean--&gt;
+        &lt;property name="clazz" ref="clazz1"/&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id="clazz1" class="com.pojo.Clazz"&gt;
+        &lt;property name="classID" value="1"/&gt;
+        &lt;property name="className" value="2106班"/&gt;
+    &lt;/bean&gt;</code></pre>
+<h3 class="atx" id="方式二：级联的方式">方式二：级联的方式</h3>
+<pre><code class="fenced-code-block language-xml">&lt;!--通过级联的方式为类类型的属性赋值--&gt;
+    &lt;bean id="student" class="com.pojo.Student"&gt;
+        &lt;property name="name" value="王五"/&gt;
+        &lt;property name="id" value="2"/&gt;
+        &lt;property name="gender" value="男"/&gt;
+        &lt;property name="age" value="21"/&gt;
+        &lt;property name="clazz" ref="clazz1"/&gt;
+        &lt;property name="clazz.classID" value="2"/&gt;
+        &lt;property name="clazz.className" value="2105"/&gt;
+   &lt;bean/&gt;
+
+   &lt;bean id="clazz1" class="com.pojo.Clazz"/&gt;</code></pre>
+<p>这里的级联方式其实就是先通过外部bean来创建Clazz对象，然后再为其赋值，用的并不多。</p>
+<h3 class="atx" id="方式三：引用内部bean的方式">方式三：引用内部bean的方式</h3>
+<pre><code class="fenced-code-block language-xml">&lt;!--通过内部bean的方式为类类型属性赋值--&gt;
+    &lt;bean id="student7" class="com.pojo.Student"&gt;
+        &lt;property name="name" value="张三"/&gt;
+        &lt;property name="id" value="3"/&gt;
+        &lt;property name="gender" value="男"/&gt;
+        &lt;property name="age" value="26"/&gt;
+        &lt;property name="clazz"&gt;
+            &lt;bean class="com.pojo.Clazz"&gt;
+                &lt;property name="classID" value="3"/&gt;
+                &lt;property name="className" value="2104"/&gt;
+            &lt;/bean&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;</code></pre>
+<p><strong>注意：这里的内部bean可以不用设置id，因为内部bean只供它外面这一个bean使用，其他位置都是使用不了的。</strong></p>
+<h2 class="atx" id="4为数组类型属性属性赋值">4.为数组类型属性属性赋值</h2>
+<p>我们往Students类中添加一个数组属性，如下：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-29-13-58-38-image.png?msec=1660152813033"></p>
+<p>赋值方式如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;!--为数组类型的属性赋值--&gt;
+    &lt;bean id="student8" class="com.pojo.Student"&gt;
+        &lt;property name="hobbies"&gt;
+            &lt;array&gt;
+                &lt;value&gt;打乒乓&lt;/value&gt;
+                &lt;value&gt;听歌&lt;/value&gt;
+            &lt;/array&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;</code></pre>
+<h2 class="atx" id="5为集合类型属性赋值">5.为集合类型属性赋值</h2>
+<p>我们先以List集合为例。</p>
+<p>我们将Student类中的hobbies属性改为集合，如下：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-29-14-03-56-image.png?msec=1660152812914"></p>
+<h3 class="atx" id="方式一：内部直接赋值">方式一：内部直接赋值</h3>
+<p>这种方式与为数组类型属性赋值十分相似，如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;!--为集合类型的属性赋值    内部赋值--&gt;
+    &lt;bean id="student9" class="com.pojo.Student"&gt;
+        &lt;property name="hobbies"&gt;
+            &lt;list&gt;
+                &lt;value&gt;打乒乓&lt;/value&gt;
+                &lt;value&gt;听歌&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;</code></pre>
+<h3 class="atx" id="方式二：引用外部的集合bean">方式二：引用外部的集合bean</h3>
+<pre><code class="fenced-code-block language-xml">    &lt;bean id="student" class="com.pojo.Student"&gt;
+        &lt;property name="hobbies" ref="list"/&gt;
+    &lt;/bean&gt;
+    &lt;util:list id="list"&gt;
+        &lt;value&gt;打乒乓&lt;/value&gt;
+        &lt;value&gt;听歌&lt;/value&gt;
+    &lt;/util:list&gt;</code></pre>
+<h3 class="atx" id="为map类型属性赋值">为Map类型属性赋值</h3>
+<p>我们将Student类中将hobbies属性改为Map类型，如下：</p>
+<p>根list类似，同样有两种方法,如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;!--为集合类型的属性赋值    内部赋值--&gt;
+    &lt;bean id="student9" class="com.pojo.Student"&gt;
+        &lt;property name="hobbies"&gt;
+            &lt;map&gt;
+                &lt;entry key="爱好一" value="乒乓球"/&gt;
+                &lt;entry key="爱好二" value="听歌"/&gt;
+            &lt;/map&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+
+    &lt;!--为集合类型的属性赋值  引用外部bean--&gt;
+
+    &lt;bean id="student10" class="com.pojo.Student"&gt;
+        &lt;property name="hobbies" ref="map"/&gt;
+    &lt;/bean&gt;
+    &lt;util:map id="map"&gt;
+        &lt;entry key="爱好一" value="乒乓球"/&gt;
+        &lt;entry key="爱好二" value="听歌"/&gt;
+    &lt;/util:map&gt;</code></pre>
+<h2 class="atx" id="6p命名空间">6.P命名空间</h2>
+<p>引入p命名空间后，可以通过以下方式为bean的各个属性赋值，如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;bean id="student11" class="com.pojo.Student" p:id="3" p:name="张三" p:clazz-ref="clazz1" /&gt;</code></pre>
+<h2 class="atx" id="7引入外部属性文件">7.引入外部属性文件</h2>
+<p>我们以配置DrudDataSource为例，我们想要在配置时使用properities属性文件</p>
+<p>properties属性配置文件如下</p>
+<pre><code class="fenced-code-block language-properties">jdbc.driver=com.mysql.cj.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/Study2?serverTimezone=UTC
+jdbc.username=root
+jdbc.password=111111</code></pre>
+<p>我们需要先在Spring配置文件中导入，如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;context:property-placeholder location="classpath:jdbc.properties"/&gt;</code></pre>
+<p>DrudDataSource的bean配置如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;!--通过外部资源配置bean--&gt;
+    &lt;bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource"&gt;
+        &lt;property name="driverClassName" value="${jdbc.driver}"/&gt;
+        &lt;property name="url" value="${jdbc.url}"/&gt;
+        &lt;property name="username" value="${jdbc.username}"/&gt;
+        &lt;property name="password" value="${jdbc.password}"/&gt;
+    &lt;/bean&gt;</code></pre>
+<h1 class="atx" id="三、bean的作用域">三、bean的作用域</h1>
+<p>我们在创建bean可以设置scope属性来设置单例单例或者是多例，默认是单例的。</p>
+<table>
+    <thead>
+    <tr>
+        <th>取值</th>
+        <th>含义</th>
+        <th>创建对象的时机</th>
+    </tr>
+    </thead>
+    <tbody><tr>
+        <td>singleton（默认）</td>
+        <td>在IOC容器中，这个bean的对象始终为单实例</td>
+        <td>IOC容器初始化时</td>
+    </tr>
+    <tr>
+        <td>prototype</td>
+        <td>这个bean在IOC容器中有多个实例</td>
+        <td>获取bean对象时</td>
+    </tr>
+    </tbody></table>
+<p>接下来我们演示一下：</p>
+<p>首先我们创建一个User类用于测试，如下：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-29-18-43-15-image.png?msec=1660152812967"></p>
+<p>然后我们在配置文件中分别配置一个多例的和一个单例的，如下：</p>
+<pre><code class="fenced-code-block language-xml">    &lt;!--设置为多例--&gt;
+    &lt;bean id="user1" class="com.pojo.User" scope="prototype"/&gt;
+
+    &lt;!--设置为单例，和默认一样--&gt;
+    &lt;bean id="user2" class="com.pojo.User" scope="singleton"/&gt;</code></pre>
+<p>编写我们的测试程序，如下：</p>
+<pre><code class="fenced-code-block language-java">    @Test
+    public void testOne(){
+        ApplicationContext ioc = new ClassPathXmlApplicationContext("LifeCycleContext.xml");
+        User user1 = ioc.getBean("user1", User.class);
+        User user2 = ioc.getBean("user1", User.class);
+        System.out.println("多例:" + "对象一：" + user1 + "对象二：" + user2);
+
+        User user3 = ioc.getBean("user2", User.class);
+        User user4 = ioc.getBean("user2", User.class);
+        System.out.println("单例:" + "对象一：" + user3 + "对象二：" + user4);
+    }</code></pre>
+<p>运行结果如下：</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-29-18-46-01-image.png?msec=1660152813025"></p>
+<p>我们可以看出来，通过单例的bean获取的对象都是同一个对象，而通过多例获取的bean是两个不同的对象。</p>
+<p>如果是在WebApplicationContext环境下还会有另外两个作用域（但不常用）：</p>
+<table>
+    <thead>
+    <tr>
+        <th>取值</th>
+        <th>含义</th>
+    </tr>
+    </thead>
+    <tbody><tr>
+        <td>request</td>
+        <td>在一个请求范围内有效</td>
+    </tr>
+    <tr>
+        <td>session</td>
+        <td>在一次会话范围内有效</td>
+    </tr>
+    </tbody></table>
+<h1 class="atx" id="四、bean的生命周期">四、bean的生命周期</h1>
+<p>在我们不加任何配置时，bean对象的生命周期只会有以下过程：</p>
+<ol>
+    <li><p>对象实例化。</p>
+    </li>
+    <li><p>设置对象属性。(通过Setter注入依赖才会有该过程)</p>
+    </li>
+    <li><p>bean对象初始化</p>
+    </li>
+    <li><p>bean对象就绪可以使用</p>
+    </li>
+    <li><p>bean对象销毁</p>
+    </li>
+</ol>
+<p>注意点：</p>
+<ol>
+    <li><p>单例bean是在获取IOC容器时进行实例化创建对象的，多例bean是在获取对象时才会行实例化创建对象的。</p>
+    </li>
+    <li><p>对象的初始化和销毁可以在配置bean时将类中的方法指定为初始化方法和销毁方法，如下：</p>
+    </li>
+</ol>
+<pre><code class="fenced-code-block language-xml"> &lt;!--指定初始化和销毁的方法--&gt;
+    &lt;bean id="user3" class="com.pojo.User" init-method="initMethod" destroy-method="destroyMethod"/&gt;</code></pre>
+<ol start="3">
+    <li><p>当ioc容器关闭时，bean对象才会被销毁。我们通过调用<code>ConfigurableApplicationContext</code>是<code>ApplicationContext</code>的子类，我们可以调用他的close方法来关闭ioc容器</p>
+    </li>
+    <li><p>在初始化的前后，其实我们还有两个过程，初始化前处理和初始化后处理，需要实现BeanPostProcessor接口，且配置到IOC容器中，需要注意的是，bean后置处理器不是单独针对某一个bean生效，而是针对IOC容器中所有bean都会执行。</p>
+    </li>
+</ol>
+<p>配置如下：</p>
+<pre><code class="fenced-code-block language-java">public class MyProcessor implements BeanPostProcessor {
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("初始化前操作！");
+        return null;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("初始化后操作！");
+        return null;
+    }
+}</code></pre>
+<p>配置到IOC容器当中，如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;bean id="myProcessor" class="com.pojo.MyProcessor"/&gt;</code></pre>
+<h1 class="atx" id="五、factorybean">五、FactoryBean</h1>
+<p>FactoryBean是Spring提供的一种整合第三方框架的常用机制。和普通的bean不同，配置一个FactoryBean类型的bean，在获取bean的时候得到的并不是class属性中配置的这个类的对象，而是getObject()方法的返回值。通过这种机制，Spring可以帮我们把复杂组件创建的详细过程和繁琐细节都屏蔽起来，只把最简洁的使用界面展示给我们。</p>
+<p>下面是FactoryBean接口的源码：</p>
+<pre><code class="fenced-code-block language-java">public interface FactoryBean&lt;T&gt; {
+    String OBJECT_TYPE_ATTRIBUTE = "factoryBeanObjectType";
+
+    @Nullable
+    T getObject() throws Exception;
+
+    @Nullable
+    Class&lt;?&gt; getObjectType();
+
+    default boolean isSingleton() {
+        return true;
+    }
+}</code></pre>
+<p>我们将实现了FactoryBean的类配置到IOC容器当中，当我们通过配置的bean获取对象时，实则获取的是getObject返回的对象。</p>
+<h1 class="atx" id="六、自动装配">六、自动装配</h1>
+<p><strong>自动装配：当一个类中有类类型的属性或者接口类型的属性时，在配置bean时，我们可以让ioc容器自动帮我们配置该属性。</strong></p>
+<p>在配置bean时，通过bean标签的autowire来配置自动装配，autowire属性有五个值：default，no，byName，byType，constructor。</p>
+<p><img alt="" src="file://D:%5CTypora%5C%E5%9B%BE%E7%89%87%5C2022-07-30-12-39-54-image.png?msec=1660152813086"></p>
+<p>default：为默认值，默认为no</p>
+<p>no：不配置。</p>
+<p>byType：根据类型来自动装配。该种装配方式下，ioc容器会根据属性的类型来匹配相应的bean，然后通过setter注入，如果有多个bean符合，会报出异常NoUniqueBeanDefinitionException。</p>
+<p>byName：根据属性名来自动装配。该种装配方式下，ioc容器会寻找id与该属性名相同的bean，然后通过setter注入。</p>
+<p>constructor：与byType类似，不同的是，ioc容器根据属性的类型来匹配某一个构造器进行注入。使用该方法必须要专门为类类型的属性和接口类型的属性创建构造方法。</p>
+<h1 class="atx" id="七、通过注解来管理ioc容器">七、通过注解来管理IOC容器</h1>
+<h2 class="atx" id="1通过注解来管理bean">1.通过注解来管理Bean</h2>
+<p>我们可以通过在类上加注解，然后让容器扫描的方式代替在XML中对bean。</p>
+<p>通过注解来管理bean有个步骤：1.类上加注解 ；2.让容器扫描相应的类。</p>
+<h3 class="atx" id="类上加注解">类上加注解</h3>
+<p>配置bean我们可以加四种注解，如下：</p>
+<ul>
+    <li><p>@Component：将类标识为普通组件</p>
+    </li>
+    <li><p>@Controller：将类标识为控制层组件</p>
+    </li>
+    <li><p>@Service：将类标识为业务层组件</p>
+    </li>
+    <li><p>@Repository：将类标识为持久层组件</p>
+    </li>
+</ul>
+<p>这四个注解对于IOC容器来说都是一样的，只是他们对于使用者来说代表的意义不同。</p>
+<h3 class="atx" id="容器扫描">容器扫描</h3>
+<p>我们加了注解之后是为了让IOC容器来管理这些类的，但是此时IOC容器并不知道哪些类加了注解，我们不可能让IOC容器扫描所有的类来判断哪类加了注解，所以我们需要给IOC容器一个范围，如下：</p>
+<pre><code class="fenced-code-block language-xml">&lt;context:component-scan  base-package="com.guo.pojo"&gt;
+
+&lt;/context:component-scan&gt;</code></pre>
+<p>如上面的配置，我们就将范围缩小到com.guo.pojo包下。</p>
+<p>我们还可以在它的子标签内加入一些额外的配置，如下：</p>
+<pre><code class="fenced-code-block language-xml"> &lt;context:component-scan  base-package="com.guo.pojo"&gt;
+        &lt;!--指定该包内哪些类不被扫描--&gt;
+        &lt;context:exclude-filter type="" expression=""/&gt;
+   &lt;/context:component-scan&gt;</code></pre>
+<pre><code class="fenced-code-block language-xml">&lt;context:component-scan  base-package="com.guo.pojo" use-default-filters="false"&gt;
+        &lt;!--指定该包下只扫描哪些类--&gt;
+        &lt;context:include-filter type="annotation" expression=""/&gt;
+&lt;/context:component-scan&gt;</code></pre>
+<p>注意：</p>
+<ol>
+    <li><p>IOC容器默认是扫描包下所有的类的，想要指定只扫描，需要关闭默认的扫描方式</p>
+    </li>
+    <li><p>指定只扫描和指定不扫描不能同时使用。</p>
+    </li>
+</ol>
+<p>属性type有两种常用的方式，分别为：annotation，assignable，前者是根据注解来包含或者排除，assignable是根据类的方式来包含或者排除，expression是注解或者类的全类名。</p>
+<h3 class="atx" id="bean的id">Bean的id</h3>
+<p>我们通过注解配置的Bean也是有id的，默认id为：将类的首字母小写，其余不变</p>
+<p>同样的，我们可以自己指定它的id，如下：</p>
+<pre><code class="fenced-code-block language-xml">@Controller("id")</code></pre>
+<h2 class="atx" id="2通过注解实现自动装配">2.通过注解实现自动装配</h2>
+<p>我们通过在属性上面加上注释<code>@Autowired</code>来实现自动装配。</p>
+<p>通过注释实现自动装配首先通过byType的方式去匹配相应的类，若匹配到多个类，那么就会使用byName的方式，若此时找不到与属性名相同的bean id，那么可以通过在<code>@Autowired</code>下面再加一个注释:<code>@Qualifier</code>，来指定一个bean的id来完成自动装配</p>
+<p>注意：我们在使用XML来配置自动装配时，如果无法装配时，会自动赋默认值，但是在使用注解<code>@Autowire</code>时，它有一个属性：<code>required</code>，表示是否是必须的，默认为true，若无法装配就会报出异常。</p>
+
+</body>
+</html>
