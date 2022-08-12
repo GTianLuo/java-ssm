@@ -87,7 +87,7 @@
 
     <!-- 引入mybatis的核心映射文件 -->
     <mappers>
-        <!--<mapper resource="mappers/UserMapper.xml"/>!-->
+        <!--<mappers resource="mappers/UserMapper.xml"/>!-->
 
         <!--
             以包名的方式引入配置文件，必须满足以下两种条件
@@ -96,7 +96,7 @@
 
             注：mapper接口的包和配置文件的包虽然不在同一目录下，但是在加载之后的文件是在同一个目录之下的。
         -->
-        <package name="com.mapper"/>
+        <package name="com.mappers"/>
     </mappers>
 
 

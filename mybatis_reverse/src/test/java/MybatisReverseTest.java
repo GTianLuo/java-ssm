@@ -1,8 +1,7 @@
-import com.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mapper.EmployeeMapper;
+import com.mappers.EmployeeMapper;
 import com.pojo.Employee;
 import com.pojo.EmployeeExample;
 import org.apache.ibatis.io.Resources;

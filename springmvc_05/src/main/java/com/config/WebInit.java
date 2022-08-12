@@ -1,10 +1,14 @@
 package com.config;
 
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.WebServlet;
 
 
 //用来代替web.xml文件
@@ -36,5 +40,18 @@ public class WebInit extends AbstractAnnotationConfigDispatcherServletInitialize
         characterEncodingFilter.setForceEncoding(true);
         HiddenHttpMethodFilter hiddenHttpMethodFilter = new HiddenHttpMethodFilter();
         return new Filter[]{characterEncodingFilter,hiddenHttpMethodFilter};
+    }
+
+    @Override
+    protected void registerContextLoaderListener(ServletContext servletContext) {
+        WebApplicationContext rootAppContext = this.createRootApplicationContext();
+        if (rootAppContext != null) {
+            ContextLoaderListener listener = new ContextLoaderListener(rootAppContext);
+
+            listener.setContextInitializers(this.getRootApplicationContextInitializers());
+            servletContext.addListener(listener);
+        } else {
+            this.logger.debug("No ContextLoaderListener registered, as createRootApplicationContext() did not return an application context");
+        }
     }
 }

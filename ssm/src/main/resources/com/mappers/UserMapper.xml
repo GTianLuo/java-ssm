@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mappers.UserMapper">
+    <sql id="allColumns">
+        id,username,password,gender,email
+    </sql>
+
+    <!--List<User> selectUserList();-->
+    <select id="selectUserList" resultType="user" >
+        select  <include refid="allColumns"/> from t_user
+    </select>
+
+    <!--  void deleteUser();-->
+    <delete id="deleteUser">
+        delete from t_user where id = ${id};
+    </delete>
+    
+    
+    <!--void update(@Param("id") Integer id);-->
+    <update id="updateUser">
+        insert
+    </update>
+</mapper>

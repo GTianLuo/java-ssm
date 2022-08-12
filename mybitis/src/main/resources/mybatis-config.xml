@@ -84,7 +84,7 @@
 
     <!-- 引入mybatis的核心映射文件 -->
     <mappers>
-        <!--<mapper resource="mapper/UserMapper.xml"/>-->
+        <!--<mappers resource="mappers/UserMapper.xml"/>-->
 
         <!--
             以包名的方式引入配置文件，必须满足以下两种条件

@@ -27,7 +27,7 @@ public class TestMybatis {
         SqlSession sqlSession = factory.openSession();
         //SqlSession sqlSession = factory.openSession(true);设置自动提交事务
         //还有一种写法，可以直接通过SqlSession对象来执行sql语句，所以写法如下：
-        //sqlSession.insert("mapper.UserMapper.insertUser");需要提sql的唯一标识，即映射文件的namespace + id，这种方式就不再需要UserMapper接口了
+        //sqlSession.insert("mappers.UserMapper.insertUser");需要提sql的唯一标识，即映射文件的namespace + id，这种方式就不再需要UserMapper接口了
         //获取UserMapper的代理实例化对象
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         //执行操作
